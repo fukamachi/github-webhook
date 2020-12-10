@@ -45,7 +45,7 @@ The structure is something like this:
 $ docker run -it -v ${PWD}/hooks:/code/hook-scripts -p 5000:5000 -e GH_HOOKS_DIR=/code/hook-scripts fukamachi/docker-gh-webhook
 
 # Using secret token to refuse requests from other than GitHub
-$ docker run -it -v ${PWD}/hooks:/code/hook-scripts -p 5000:5000 -e GH_SECRET=xxxxxxxxxxxxxxxxxxx fukamachi/docker-gh-webhook
+$ docker run -it -v ${PWD}/hooks:/app/hooks -p 5000:5000 -e GH_SECRET=xxxxxxxxxxxxxxxxxxx fukamachi/docker-gh-webhook
 ```
 
 ## Writing Hooks
