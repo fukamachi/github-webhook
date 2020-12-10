@@ -4,8 +4,9 @@
         #:lack.request)
   (:import-from #:docker-gh-webhook/handler
                 #:make-hooks-handler)
-  (:import-from #:ironclad
-                #:ascii-string-to-byte-array)
+  (:import-from #:babel
+                #:string-to-octets
+                #:octets-to-string)
   (:import-from #:yason
                 #:parse)
   (:export #:make-app))
@@ -17,8 +18,9 @@
   (let* ((headers (request-headers req))
          (content-type (gethash "content-type" headers))
          (event (gethash "x-github-event" headers)))
-    (and (eql (search "application/json" content-type) 0)
-         event)))
+    (unless (and (eql (search "application/json" content-type) 0)
+                 event)
+      (error 'invalid-request))))
 
 (defun main (handler event action payload content)
   (check-type handler function)
@@ -36,7 +38,7 @@
   (check-type hooks-dir pathname)
   (check-type secret (or null string))
   (let ((secret (and secret
-                     (ascii-string-to-byte-array secret)))
+                     (string-to-octets secret)))
         (handler (make-hooks-handler hooks-dir
                                      :exit-on-failure exit-on-failure)))
     (lambda (env)
@@ -47,13 +49,15 @@
             (return-from app '(404 () ("Not Found"))))
 
           (handler-case
-              (progn
+              (let ((headers (request-headers req))
+                    (content (request-content req)))
                 (when secret
-                  (check-signature secret req))
+                  (check-signature secret headers content))
                 (check-request req)
                 (let* ((event (gethash "x-github-event" (request-headers req)))
-                       (content (request-content req))
-                       (payload (yason:parse content))
+                       (payload (handler-case
+                                    (yason:parse (octets-to-string content))
+                                  (error () (error 'invalid-request))))
                        (action (gethash "action" payload)))
                   (main handler event action payload content))
                 '(200 () ("OK")))

@@ -9,6 +9,7 @@
                "lack-request"
                "ironclad"
                "yason"
+               "babel"
                "alexandria")
   :pathname "src"
   :components

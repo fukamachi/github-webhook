@@ -5,9 +5,6 @@
                 #:hmac-digest
                 #:update-hmac
                 #:byte-array-to-hex-string)
-  (:import-from #:lack.request
-                #:request-headers
-                #:request-content)
   (:export #:check-signature
            #:invalid-signature))
 (in-package #:docker-gh-webhook/signature)
@@ -28,12 +25,12 @@
   (and (<= (length prefix) (length value))
        (string= prefix value :end2 (length prefix))))
 
-(defun check-signature (secret req)
+(defun check-signature (secret headers content)
   (check-type secret (vector (unsigned-byte 8)))
-  (let ((signature (gethash "x-hub-signature-256" (request-headers req))))
+  (let ((signature (gethash "x-hub-signature-256" headers)))
     (or (and (stringp signature)
              (starts-with "sha256=" signature)
              (verify-hub-signature secret
-                                   (request-content req)
+                                   content
                                    signature))
         (error 'invalid-signature))))
