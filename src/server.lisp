@@ -15,8 +15,8 @@
 (defun up (&key hooks-dir
                 secret
                 exit-on-failure
-                port)
-  (check-type hooks-dir string)
+                (port 5000))
+  (check-type hooks-dir (or string pathname))
   (check-type secret (or null string))
   (when (boundp '*server*)
     (cerror "Restart" "Server is already running")
@@ -32,4 +32,6 @@
 
 (defun down ()
   (when (boundp '*server*)
-    (clack:stop *server*)))
+    (clack:stop *server*)
+    (makunbound '*server*))
+  (values))

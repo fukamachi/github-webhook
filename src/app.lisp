@@ -16,7 +16,7 @@
 
 (defun check-request (req)
   (let* ((headers (request-headers req))
-         (content-type (gethash "content-type" headers))
+         (content-type (getf (request-env req) :content-type))
          (event (gethash "x-github-event" headers)))
     (unless (and (eql (search "application/json" content-type) 0)
                  event)
@@ -55,11 +55,12 @@
                   (check-signature secret headers content))
                 (check-request req)
                 (let* ((event (gethash "x-github-event" (request-headers req)))
+                       (content-json (octets-to-string content))
                        (payload (handler-case
-                                    (yason:parse (octets-to-string content))
+                                    (yason:parse content-json)
                                   (error () (error 'invalid-request))))
                        (action (gethash "action" payload)))
-                  (main handler event action payload content))
+                  (main handler event action payload content-json))
                 '(200 () ("OK")))
             (invalid-signature ()
               '(403 () ("Invalid signature")))

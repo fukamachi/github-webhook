@@ -8,7 +8,7 @@
 (defun logger (stream level message args)
   (format stream "~&[~A] ~A~%"
           level
-          (apply #'format message args)))
+          (apply #'format nil message args)))
 
 (defun log-info (message &rest args)
   (logger t :info message args))

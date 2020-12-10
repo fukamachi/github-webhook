@@ -8,7 +8,7 @@
 (in-package #:github-webhook/handler)
 
 (defun file-executable-p (file)
-  (sb-unix:unix-access (namestring file) sb-unix:x_ok))
+  (sb-unix:unix-access (uiop:native-namestring file) sb-unix:x_ok))
 
 ;; Available environment variables
 ;;
@@ -36,12 +36,12 @@
   ;; hooks/<event>/<action>/*
   (let* ((event-dir (merge-pathnames event hooks-dir))
          (action-dir (merge-pathnames action event-dir)))
-    (mapcar #'file-executable-p
-            (append (uiop:directory-files hooks-dir)
-                    (and (uiop:directory-exists-p event-dir)
-                         (uiop:directory-files event-dir))
-                    (and (uiop:directory-exists-p action-dir)
-                         (uiop:directory-files action-dir))))))
+    (remove-if-not #'file-executable-p
+                   (append (uiop:directory-files hooks-dir)
+                           (and (uiop:directory-exists-p event-dir)
+                                (uiop:directory-files event-dir))
+                           (and (uiop:directory-exists-p action-dir)
+                                (uiop:directory-files action-dir))))))
 
 (defun extract-ref (value type)
   (when value
@@ -62,7 +62,7 @@
                                    :type "json")
           (write-string content payload-stream)
           (with-env (("GH_HOOK_EVENT_NAME" event)
-                     ("GH_HOOK_EVENT_PATH" (namestring payload-path))
+                     ("GH_HOOK_EVENT_PATH" (uiop:native-namestring payload-path))
                      ("GH_HOOK_ACTION" action)
                      ("GH_HOOK_SENDER" (hget payload '("sender" "login")))
                      ("GH_HOOK_REPOSITORY" (hget payload '("repository" "full_name")))
@@ -93,7 +93,7 @@
                                        (abort e))))))
                 (dolist (script scripts)
                   (log-info "Running '~A'." script)
-                  (uiop:run-program script
+                  (uiop:run-program (uiop:native-namestring script)
                                     :output t
                                     :error-output t)
                   (log-info "Finished '~A'." script))))))))))

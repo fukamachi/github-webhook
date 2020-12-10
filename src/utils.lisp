@@ -14,7 +14,10 @@
       `(let ((,before (uiop:getenv ,key)))
          (unwind-protect
              (progn
-               (setf (uiop:getenv ,key) (or ,val ""))
+               (setf (uiop:getenv ,key)
+                     (if ,val
+                         (coerce ,val 'simple-string)
+                         ""))
                ,@body)
            (setf (uiop:getenv ,key) (or ,before "")))))))
 
