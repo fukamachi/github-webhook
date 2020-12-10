@@ -17,6 +17,6 @@
 (unless (uiop:directory-exists-p *hooks-dir*)
   (error "Hooks directory '~A' doesn't exist" *hooks-dir*))
 
-(docker-gh-webhook/app:make-app
+(github-webhook/app:make-app
   :hooks-dir *hooks-dir*
   :secret *secret-key*)

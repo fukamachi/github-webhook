@@ -1,14 +1,14 @@
-(defpackage #:docker-gh-webhook/server
+(defpackage #:github-webhook/server
   (:use #:cl
         #:lack.request)
-  (:import-from #:docker-gh-webhook/app
+  (:import-from #:github-webhook/app
                 #:make-app)
   (:import-from #:clack
                 #:clackup
                 #:stop)
   (:export #:up
            #:down))
-(in-package #:docker-gh-webhook/server)
+(in-package #:github-webhook/server)
 
 (defvar *server*)
 

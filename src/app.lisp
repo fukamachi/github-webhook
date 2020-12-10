@@ -1,8 +1,8 @@
-(defpackage #:docker-gh-webhook/app
+(defpackage #:github-webhook/app
   (:use #:cl
-        #:docker-gh-webhook/signature
+        #:github-webhook/signature
         #:lack.request)
-  (:import-from #:docker-gh-webhook/handler
+  (:import-from #:github-webhook/handler
                 #:make-hooks-handler)
   (:import-from #:babel
                 #:string-to-octets
@@ -10,7 +10,7 @@
   (:import-from #:yason
                 #:parse)
   (:export #:make-app))
-(in-package #:docker-gh-webhook/app)
+(in-package #:github-webhook/app)
 
 (define-condition invalid-request (error) ())
 

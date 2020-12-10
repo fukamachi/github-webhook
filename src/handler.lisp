@@ -1,11 +1,11 @@
-(defpackage #:docker-gh-webhook/handler
+(defpackage #:github-webhook/handler
   (:use #:cl
-        #:docker-gh-webhook/logger)
-  (:import-from #:docker-gh-webhook/utils
+        #:github-webhook/logger)
+  (:import-from #:github-webhook/utils
                 #:hget
                 #:with-env)
   (:export #:make-hooks-handler))
-(in-package #:docker-gh-webhook/handler)
+(in-package #:github-webhook/handler)
 
 (defun file-executable-p (file)
   (sb-unix:unix-access (namestring file) sb-unix:x_ok))

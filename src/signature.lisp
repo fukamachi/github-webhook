@@ -1,4 +1,4 @@
-(defpackage #:docker-gh-webhook/signature
+(defpackage #:github-webhook/signature
   (:use #:cl)
   (:import-from #:ironclad
                 #:make-hmac
@@ -7,7 +7,7 @@
                 #:byte-array-to-hex-string)
   (:export #:check-signature
            #:invalid-signature))
-(in-package #:docker-gh-webhook/signature)
+(in-package #:github-webhook/signature)
 
 (define-condition invalid-signature (error) ())
 

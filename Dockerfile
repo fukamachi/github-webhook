@@ -11,7 +11,7 @@ COPY . /app
 RUN cat /app/docker/init.lisp >> ~/.roswell/init.lisp
 
 RUN qlot install && \
-  qlot exec ros -e "(ql:quickload :docker-gh-webhook)"
+  qlot exec ros -e "(ql:quickload :github-webhook)"
 
 EXPOSE 5000
 ENTRYPOINT ["/app/docker/entrypoint.sh"]

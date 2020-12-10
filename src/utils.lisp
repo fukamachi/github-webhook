@@ -1,4 +1,4 @@
-(defpackage #:docker-gh-webhook/utils
+(defpackage #:github-webhook/utils
   (:use #:cl)
   (:import-from #:alexandria
                 #:with-gensyms
@@ -6,7 +6,7 @@
                 #:ensure-list)
   (:export #:with-env
            #:hget))
-(in-package #:docker-gh-webhook/utils)
+(in-package #:github-webhook/utils)
 
 (defmacro with-env1 ((key &optional val) &body body)
   (once-only (key val)

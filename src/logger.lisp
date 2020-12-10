@@ -1,9 +1,9 @@
-(defpackage #:docker-gh-webhook/logger
+(defpackage #:github-webhook/logger
   (:use #:cl)
   (:export #:log-info
            #:log-warn
            #:log-error))
-(in-package #:docker-gh-webhook/logger)
+(in-package #:github-webhook/logger)
 
 (defun logger (stream level message args)
   (format stream "~&[~A] ~A~%"
