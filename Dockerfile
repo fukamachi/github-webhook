@@ -1,5 +1,5 @@
 ARG SBCL_VERSION=2.0.9
-FROM fukamachi/sbcl:${SBCL_VERSION} AS base
+FROM fukamachi/sbcl:${SBCL_VERSION}
 ARG QLOT_VERSION=0.10.6
 ENV LANG C.UTF-8
 ENV GH_HOOKS_DIR /app/hooks
