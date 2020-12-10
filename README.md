@@ -1,20 +1,20 @@
-# docker-gh-webhook
+# github-webhook
 
 Docker container to listen for GitHub webhook events.
 
-* https://hub.docker.com/r/fukamachi/docker-gh-webhook
+* https://hub.docker.com/r/fukamachi/github-webhook
 
 ## Usage
 
 ```shell
-$ docker run -it -v ${PWD}/hooks:/app/hooks -p 5000:5000 fukamachi/docker-gh-webhook
+$ docker run -it -v ${PWD}/hooks:/app/hooks -p 5000:5000 fukamachi/github-webhook
 ```
 
-`docker-gh-webhook` server will invoke scripts under `/app/hooks` when getting webhook requests.
+`github-webhook` server will invoke scripts under `/app/hooks` when getting webhook requests.
 
 ## Hooks directory structure
 
-`docker-gh-webhook` determines which hook scripts to run by its subdirectories. (eg. `hooks/<event>/<action>/*`)
+`github-webhook` determines which hook scripts to run by its subdirectories. (eg. `hooks/<event>/<action>/*`)
 
 The structure is something like this:
 ```
@@ -42,10 +42,10 @@ The structure is something like this:
 
 ```shell
 # Using custom location for hook scripts
-$ docker run -it -v ${PWD}/hooks:/code/hook-scripts -p 5000:5000 -e GH_HOOKS_DIR=/code/hook-scripts fukamachi/docker-gh-webhook
+$ docker run -it -v ${PWD}/hooks:/code/hook-scripts -p 5000:5000 -e GH_HOOKS_DIR=/code/hook-scripts fukamachi/github-webhook
 
 # Using secret token to refuse requests from other than GitHub
-$ docker run -it -v ${PWD}/hooks:/app/hooks -p 5000:5000 -e GH_SECRET=xxxxxxxxxxxxxxxxxxx fukamachi/docker-gh-webhook
+$ docker run -it -v ${PWD}/hooks:/app/hooks -p 5000:5000 -e GH_SECRET=xxxxxxxxxxxxxxxxxxx fukamachi/github-webhook
 ```
 
 ## Writing Hooks
