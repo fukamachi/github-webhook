@@ -1,4 +1,5 @@
-(defpackage #:github-webhook/app
+(defpackage #:github-webhook
+  (:nicknames #:github-webhook/app)
   (:use #:cl
         #:github-webhook/signature
         #:lack.request)
@@ -10,7 +11,7 @@
   (:import-from #:yason
                 #:parse)
   (:export #:make-app))
-(in-package #:github-webhook/app)
+(in-package #:github-webhook)
 
 (define-condition invalid-request (error) ())
 

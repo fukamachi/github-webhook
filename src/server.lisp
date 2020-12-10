@@ -1,7 +1,6 @@
 (defpackage #:github-webhook/server
-  (:use #:cl
-        #:lack.request)
-  (:import-from #:github-webhook/app
+  (:use #:cl)
+  (:import-from #:github-webhook
                 #:make-app)
   (:import-from #:clack
                 #:clackup

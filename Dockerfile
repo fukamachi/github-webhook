@@ -9,7 +9,7 @@ WORKDIR /app
 COPY . /app
 
 RUN qlot install && \
-  qlot exec ros -e "(ql:quickload :github-webhook)"
+  qlot exec ros -e "(ql:quickload :github-webhook/server)"
 
 EXPOSE 5000
 ENTRYPOINT ["/app/docker/entrypoint.sh"]

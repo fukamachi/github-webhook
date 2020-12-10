@@ -3,9 +3,7 @@
   :author "Eitaro Fukamachi"
   :license "BSD 2-Clause"
   :description "Docker container to listen for GitHub webhook events"
-  :depends-on ("clack"
-               "hunchentoot"
-               "lack"
+  :depends-on ("lack"
                "lack-request"
                "ironclad"
                "yason"
@@ -13,9 +11,16 @@
                "alexandria")
   :pathname "src"
   :components
-  ((:file "server" :depends-on ("app"))
-   (:file "app" :depends-on ("signature" "handler"))
+  ((:file "app" :depends-on ("signature" "handler"))
    (:file "handler" :depends-on ("logger" "utils"))
    (:file "logger")
    (:file "signature")
    (:file "utils")))
+
+(defsystem "github-webhook/server"
+  :depends-on ("github-webhook"
+               "clack"
+               "hunchentoot")
+  :pathname "src"
+  :components
+  ((:file "server")))
