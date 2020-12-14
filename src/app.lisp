@@ -10,6 +10,7 @@
                 #:octets-to-string)
   (:import-from #:yason
                 #:parse)
+  (:import-from #:nail)
   (:export #:make-app))
 (in-package #:github-webhook)
 
@@ -41,29 +42,31 @@
   (let ((secret (and secret
                      (string-to-octets secret)))
         (handler (make-hooks-handler hooks-dir
-                                     :exit-on-failure exit-on-failure)))
+                                     :exit-on-failure exit-on-failure))
+        (logger (make-instance 'nail:logger)))
     (lambda (env)
-      (block app
-        (let ((req (make-request env)))
-          ;; Accept only POST requests
-          (unless (eq (request-method req) :post)
-            (return-from app '(404 () ("Not Found"))))
+      (nail:with-logger logger
+        (block app
+          (let ((req (make-request env)))
+            ;; Accept only POST requests
+            (unless (eq (request-method req) :post)
+              (return-from app '(404 () ("Not Found"))))
 
-          (handler-case
-              (let ((headers (request-headers req))
-                    (content (request-content req)))
-                (when secret
-                  (check-signature secret headers content))
-                (check-request req)
-                (let* ((event (gethash "x-github-event" (request-headers req)))
-                       (content-json (octets-to-string content))
-                       (payload (handler-case
-                                    (yason:parse content-json)
-                                  (error () (error 'invalid-request))))
-                       (action (gethash "action" payload)))
-                  (main handler event action payload content-json))
-                '(200 () ("OK")))
-            (invalid-signature ()
-              '(403 () ("Invalid signature")))
-            (invalid-request ()
-              '(400 () ("Invalid request")))))))))
+            (handler-case
+                (let ((headers (request-headers req))
+                      (content (request-content req)))
+                  (when secret
+                    (check-signature secret headers content))
+                  (check-request req)
+                  (let* ((event (gethash "x-github-event" (request-headers req)))
+                         (content-json (octets-to-string content))
+                         (payload (handler-case
+                                      (yason:parse content-json)
+                                    (error () (error 'invalid-request))))
+                         (action (gethash "action" payload)))
+                    (main handler event action payload content-json))
+                  '(200 () ("OK")))
+              (invalid-signature ()
+                '(403 () ("Invalid signature")))
+              (invalid-request ()
+                '(400 () ("Invalid request"))))))))))

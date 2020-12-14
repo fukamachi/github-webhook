@@ -8,12 +8,12 @@
                "ironclad"
                "yason"
                "babel"
+               "nail"
                "alexandria")
   :pathname "src"
   :components
   ((:file "app" :depends-on ("signature" "handler"))
-   (:file "handler" :depends-on ("logger" "utils"))
-   (:file "logger")
+   (:file "handler" :depends-on ("utils"))
    (:file "signature")
    (:file "utils")))
 

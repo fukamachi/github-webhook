@@ -6,3 +6,7 @@
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)
   :version "ql-2020-10-16"))
+("nail" .
+ (:class qlot/source/github:source-github
+  :initargs (:repos "fukamachi/nail" :ref nil :branch nil :tag nil)
+  :version "github-f3d6415b4455da8d04133764698e2b0a"))

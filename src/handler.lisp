@@ -1,9 +1,9 @@
 (defpackage #:github-webhook/handler
-  (:use #:cl
-        #:github-webhook/logger)
+  (:use #:cl)
   (:import-from #:github-webhook/utils
                 #:hget
                 #:with-env)
+  (:import-from #:nail)
   (:export #:make-hooks-handler))
 (in-package #:github-webhook/handler)
 
@@ -36,12 +36,11 @@
   ;; hooks/<event>/<action>/*
   (let* ((event-dir (merge-pathnames event hooks-dir))
          (action-dir (merge-pathnames action event-dir)))
-    (remove-if-not #'file-executable-p
-                   (append (uiop:directory-files hooks-dir)
-                           (and (uiop:directory-exists-p event-dir)
-                                (uiop:directory-files event-dir))
-                           (and (uiop:directory-exists-p action-dir)
-                                (uiop:directory-files action-dir))))))
+    (append (uiop:directory-files hooks-dir)
+            (and (uiop:directory-exists-p event-dir)
+                 (uiop:directory-files event-dir))
+            (and (uiop:directory-exists-p action-dir)
+                 (uiop:directory-files action-dir)))))
 
 (defun extract-ref (value type)
   (when value
@@ -92,8 +91,13 @@
                                        (invoke-restart restart)
                                        (abort e))))))
                 (dolist (script scripts)
-                  (log-info "Running '~A'." script)
-                  (uiop:run-program (uiop:native-namestring script)
-                                    :output t
-                                    :error-output t)
-                  (log-info "Finished '~A'." script))))))))))
+                  (cond
+                    ((file-executable-p script)
+                     (nai:info "Running '~A'." script)
+                     (nail:without-logger
+                       (uiop:run-program (uiop:native-namestring script)
+                                         :output t
+                                         :error-output t))
+                     (nai:info "Finished '~A'." script))
+                    (t
+                     (warn "Hook '~A' is not executable. Ignored." script))))))))))))
