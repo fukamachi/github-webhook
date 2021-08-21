@@ -4,6 +4,8 @@
                 #:hget
                 #:with-env)
   (:import-from #:nail)
+  (:import-from #:alexandria
+                #:named-lambda)
   (:export #:make-hooks-handler))
 (in-package #:github-webhook/handler)
 
@@ -34,8 +36,10 @@
   ;; hooks/*
   ;; hooks/<event>/*
   ;; hooks/<event>/<action>/*
-  (let* ((event-dir (merge-pathnames event hooks-dir))
-         (action-dir (merge-pathnames action event-dir)))
+  (let* ((event-dir (uiop:ensure-directory-pathname
+                      (merge-pathnames event hooks-dir)))
+         (action-dir (uiop:ensure-directory-pathname
+                       (merge-pathnames action event-dir))))
     (append (uiop:directory-files hooks-dir)
             (and (uiop:directory-exists-p event-dir)
                  (uiop:directory-files event-dir))
@@ -50,8 +54,12 @@
 
 (defun make-hooks-handler (hooks-dir &key exit-on-failure)
   (check-type hooks-dir pathname)
-  (lambda (event action payload content)
+  (named-lambda hooks-handler (event action payload content)
+    (nai:info "Received an event '~A' (~A)" event action)
     (let ((scripts (hook-scripts hooks-dir event action)))
+      (unless scripts
+        (nai:info "No scripts to run. Ignored.")
+        (return-from hooks-handler))
       (when scripts
         (uiop:with-temporary-file (:stream payload-stream
                                    :pathname payload-path
@@ -81,9 +89,9 @@
             (block exit
               (handler-bind ((error
                                (lambda (e)
-                                 (log-warn "Hook '~A' exited with code=~A."
-                                           (uiop:subprocess-error-command e)
-                                           (uiop:subprocess-error-code e))
+                                 (warn "Hook '~A' exited with code=~A."
+                                       (uiop:subprocess-error-command e)
+                                       (uiop:subprocess-error-code e))
                                  (when exit-on-failure
                                    (return-from exit))
                                  (let ((restart (find-restart 'continue e)))
@@ -96,8 +104,8 @@
                      (nai:info "Running '~A'." script)
                      (nail:without-logger
                        (uiop:run-program (uiop:native-namestring script)
-                                         :output t
-                                         :error-output t))
-                     (nai:info "Finished '~A'." script))
+                                         :output *standard-output*
+                                         :error-output *error-output*))
+                     (nai:info "Successfully finished '~A'." script))
                     (t
                      (warn "Hook '~A' is not executable. Ignored." script))))))))))))
