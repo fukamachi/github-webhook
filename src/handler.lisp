@@ -68,6 +68,7 @@
                                    :prefix "event"
                                    :type "json")
           (write-string content payload-stream)
+          (force-output payload-stream)
           (with-env (("GH_HOOK_EVENT_NAME" event)
                      ("GH_HOOK_EVENT_PATH" (uiop:native-namestring payload-path))
                      ("GH_HOOK_ACTION" action)
