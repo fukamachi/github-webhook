@@ -1,5 +1,5 @@
 (defsystem "github-webhook"
-  :version "0.1.0"
+  :version "0.1.1"
   :author "Eitaro Fukamachi"
   :license "BSD 2-Clause"
   :description "Docker container to listen for GitHub webhook events"
