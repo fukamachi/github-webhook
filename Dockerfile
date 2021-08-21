@@ -1,15 +1,21 @@
-ARG SBCL_VERSION=2.0.9
-FROM fukamachi/sbcl:${SBCL_VERSION}
-ARG QLOT_VERSION=0.10.6
-ENV GH_HOOKS_DIR /app/hooks
-
-RUN ros install fukamachi/qlot/${QLOT_VERSION}
+FROM fukamachi/qlot AS build-env
 
 WORKDIR /app
 COPY . /app
+RUN qlot install
 
-RUN qlot install && \
-  qlot exec ros -e "(ql:quickload :github-webhook/server)"
+FROM clfoundation/sbcl
+ENV GH_HOOKS_DIR /app/hooks
+ENV CLACK_HANDLER hunchentoot
 
-EXPOSE 5000
+WORKDIR /app
+RUN set -x; \
+  mkdir -p "$HOME/.config/common-lisp/source-registry.conf.d/" && \
+  echo '(:tree "/app")' >> "$HOME/.config/common-lisp/source-registry.conf.d/app.conf"
+COPY --from=build-env /app/.qlot /app/.qlot
+COPY . /app
+RUN set -x; \
+  sbcl --load .qlot/setup.lisp --eval '(ql:quickload (list :clack :github-webhook/server))' && \
+  mkdir -p /app/hooks
+
 ENTRYPOINT ["/app/docker/entrypoint.sh"]

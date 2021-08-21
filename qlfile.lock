@@ -1,12 +1,12 @@
 ("quicklisp" .
  (:class qlot/source/dist:source-dist
   :initargs (:distribution "http://beta.quicklisp.org/dist/quicklisp.txt" :%version :latest)
-  :version "2020-10-16"))
+  :version "2021-08-07"))
 ("clack" .
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)
-  :version "ql-2020-10-16"))
+  :version "ql-2021-08-07"))
 ("nail" .
- (:class qlot/source/github:source-github
-  :initargs (:repos "fukamachi/nail" :ref nil :branch nil :tag nil)
-  :version "github-f3d6415b4455da8d04133764698e2b0a"))
+ (:class qlot/source/git:source-git
+  :initargs (:remote-url "https://github.com/fukamachi/nail")
+  :version "git-cf681793d9e2fe79dec7b1a15f87543804b9d7f9"))
