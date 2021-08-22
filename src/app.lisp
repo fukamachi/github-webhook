@@ -27,7 +27,7 @@
 (defun main (handler event action payload content)
   (check-type handler function)
   (check-type event string)
-  (check-type action string)
+  (check-type action (or string null))
   (check-type payload hash-table)
   (check-type content string)
   (funcall handler

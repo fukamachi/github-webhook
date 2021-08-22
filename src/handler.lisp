@@ -38,12 +38,14 @@
   ;; hooks/<event>/<action>/*
   (let* ((event-dir (uiop:ensure-directory-pathname
                       (merge-pathnames event hooks-dir)))
-         (action-dir (uiop:ensure-directory-pathname
-                       (merge-pathnames action event-dir))))
+         (action-dir (and action
+                          (uiop:ensure-directory-pathname
+                            (merge-pathnames action event-dir)))))
     (append (uiop:directory-files hooks-dir)
             (and (uiop:directory-exists-p event-dir)
                  (uiop:directory-files event-dir))
-            (and (uiop:directory-exists-p action-dir)
+            (and action-dir
+                 (uiop:directory-exists-p action-dir)
                  (uiop:directory-files action-dir)))))
 
 (defun extract-ref (value type)
@@ -55,7 +57,7 @@
 (defun make-hooks-handler (hooks-dir &key exit-on-failure)
   (check-type hooks-dir pathname)
   (named-lambda hooks-handler (event action payload content)
-    (nai:info "Received an event '~A' (~A)" event action)
+    (nai:info "Received an event '~A'~@[ (~A)~]" event action)
     (let ((scripts (hook-scripts hooks-dir event action)))
       (unless scripts
         (nai:info "No scripts to run. Ignored.")
