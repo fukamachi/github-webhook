@@ -9,6 +9,7 @@
                "yason"
                "babel"
                "nail"
+               "bordeaux-threads"
                "alexandria")
   :pathname "src"
   :components

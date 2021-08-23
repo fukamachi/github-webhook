@@ -10,6 +10,8 @@
                 #:octets-to-string)
   (:import-from #:yason
                 #:parse)
+  (:import-from #:bordeaux-threads
+                #:make-thread)
   (:import-from #:nail)
   (:export #:make-app))
 (in-package #:github-webhook)
@@ -64,7 +66,11 @@
                                       (yason:parse content-json)
                                     (error () (error 'invalid-request))))
                          (action (gethash "action" payload)))
-                    (main handler event action payload content-json))
+                    (make-thread
+                      (lambda ()
+                        (main handler event action payload content-json))
+                      :initial-bindings `((*standard-output* . ,*standard-output*)
+                                          (*error-output* . ,*error-output*))))
                   '(200 () ("OK")))
               (invalid-signature ()
                 '(403 () ("Invalid signature")))
