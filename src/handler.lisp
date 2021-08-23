@@ -107,8 +107,8 @@
                      (nai:info "Running '~A'." script)
                      (nail:without-logger
                        (uiop:run-program (uiop:native-namestring script)
-                                         :output *standard-output*
-                                         :error-output *error-output*))
+                                         :output :interactive
+                                         :error-output :output))
                      (nai:info "Successfully finished '~A'." script))
                     (t
                      (warn "Hook '~A' is not executable. Ignored." script))))))))))))
